@@ -5,22 +5,22 @@ mymemory_t* mymemory_init(size_t size);
 
 void mymemory_display(mymemory_t *memory);
 
-void libera(mymemory_t *memory);
+void mymemory_cleanup(mymemory_t *memory);
 
 void mymemory_display(mymemory_t *memory)
 {
     printf("%d \n", aux->data);
     if(aux!=tail){
-        show(aux->next,tail);
+        mymemory_display(aux->next,tail);
     }
 }
 
-void libera(mymemory_t *memory)
+void mymemory_cleanup(mymemory_t *memory)
 {
     if(aux!=l->tail){
         libera(aux->next,l);
     }
-    free(aux);
+    mymemory_cleanup(aux);
     l->size--;
 }
 
