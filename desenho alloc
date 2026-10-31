@@ -1,0 +1,25 @@
++-----------------------------------------------------------------------------------------+
+|                                    ESTRUTURA mymemory_t                                 |
+|  total_size = 1024 bytes                                                                |
+|  pool = 0x7FFF00 (Início do Bloco Gigante)                                              |
+|  head --------+                                                                         |
++---------------+-------------------------------------------------------------------------+
+                |
+                v
+       [NODO 1: allocation_t]                        [NODO 2: allocation_t]
+       +-----------------------+                     +-----------------------+
+       | start = 0x7FFF00      |                     | start = 0x7FFF80      |
+       | size  = 64 bytes      |                     | size  = 128 bytes     |
+       | next  ----------------+-------------------->| next  = NULL          |
+       +-----------------------+                     +-----------------------+
+                   |                                             |
+                   | (Aponta para a                              | (Aponta para a
+                   |  fatia no pool)                             |  fatia no pool)
+                   v                                             v
++-----------------------------------------------------------------------------------------+
+|                                  BLOCO DE MEMÓRIA (POOL)                                |
+|                                                                                         |
+|  [ Bloco Alocado 1 ]   [ Espaço Livre (Lacuna) ]   [ Bloco Alocado 2 ]  [ Livre Até o Fim]|
+|  (64 bytes)            (  Bloco de Saturação  )    (128 bytes)          ( Restante )      |
+|  0x7FFF00              0x7FFF40                    0x7FFF80             0x7FFFF0          |
++-----------------------------------------------------------------------------------------+
