@@ -1,0 +1,9 @@
+# binarios
+trabalho
+trabalho.exe
+*.o
+*.out
+
+# sistema
+.DS_Store
+Thumbs.db
