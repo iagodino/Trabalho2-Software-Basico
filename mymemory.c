@@ -18,13 +18,16 @@
 #include "mymemory.h"
 
 /* ================================================================ init */
-mymemory_t* mymemory_init(size_t size){
-    mymemory_t *aux = (mymemory_t*) malloc(sizeof(mymemory_t));
-    if(aux == NULL){
+mymemory_t *mymemory_init(size_t size)
+{
+    mymemory_t *aux = (mymemory_t *)malloc(sizeof(mymemory_t));
+    if (aux == NULL)
+    {
         return NULL;
     }
     aux->pool = malloc(size);
-    if(aux->pool == NULL){
+    if (aux->pool == NULL)
+    {
         free(aux);
         return NULL;
     }
@@ -36,37 +39,49 @@ mymemory_t* mymemory_init(size_t size){
 }
 
 /* =============================================================== alloc */
-void* mymemory_alloc(mymemory_t *memory, size_t size){
-    if (memory == NULL || size == 0) {
+void *mymemory_alloc(mymemory_t *memory, size_t size)
+{
+    if (memory == NULL || size == 0)
+    {
         return NULL;
     }
 
     void *endereco_disponivel = NULL;
 
-    if (memory->head == NULL) {
+    if (memory->head == NULL)
+    {
         /* Lista vazia: o pool inteiro esta livre */
-        if (size <= memory->total_size) {
+        if (size <= memory->total_size)
+        {
             endereco_disponivel = memory->pool;
-        } else {
+        }
+        else
+        {
             return NULL;
         }
     }
-    else {
+    else
+    {
         /* First Fit: percorre as lacunas em ordem de endereco e
          * para na PRIMEIRA que for grande o suficiente. */
         allocation_t *atual = memory->head;
 
         /* Lacuna 1: entre o inicio do pool e o primeiro bloco */
-        size_t espaco_antes = (size_t)((char*)atual->start - (char*)memory->pool);
-        if (espaco_antes >= size) {
+        size_t espaco_antes = (size_t)((char *)atual->start - (char *)memory->pool);
+        if (espaco_antes >= size)
+        {
             endereco_disponivel = memory->pool;
-        } else {
+        }
+        else
+        {
             /* Lacuna 2: entre o fim de um bloco e o inicio do proximo */
-            while (atual->next != NULL) {
-                void *fim_atual = (char*)atual->start + atual->size;
-                size_t espaco_entre = (size_t)((char*)atual->next->start - (char*)fim_atual);
+            while (atual->next != NULL)
+            {
+                void *fim_atual = (char *)atual->start + atual->size;
+                size_t espaco_entre = (size_t)((char *)atual->next->start - (char *)fim_atual);
 
-                if (espaco_entre >= size) {
+                if (espaco_entre >= size)
+                {
                     endereco_disponivel = fim_atual;
                     break;
                 }
@@ -74,21 +89,25 @@ void* mymemory_alloc(mymemory_t *memory, size_t size){
             }
 
             /* Lacuna 3: entre o fim do ultimo bloco e o fim do pool */
-            if (endereco_disponivel == NULL) {
-                void *fim_ultimo = (char*)atual->start + atual->size;
-                size_t espaco_depois = (size_t)((char*)memory->pool + memory->total_size - (char*)fim_ultimo);
+            if (endereco_disponivel == NULL)
+            {
+                void *fim_ultimo = (char *)atual->start + atual->size;
+                size_t espaco_depois = (size_t)((char *)memory->pool + memory->total_size - (char *)fim_ultimo);
 
-                if (espaco_depois >= size) {
+                if (espaco_depois >= size)
+                {
                     endereco_disponivel = fim_ultimo;
                 }
             }
         }
     }
 
-    if (endereco_disponivel != NULL) {
+    if (endereco_disponivel != NULL)
+    {
         /* Cria o nodo de controle da nova alocacao */
-        allocation_t *novo_nodo = (allocation_t *) malloc(sizeof(allocation_t));
-        if (novo_nodo == NULL) {
+        allocation_t *novo_nodo = (allocation_t *)malloc(sizeof(allocation_t));
+        if (novo_nodo == NULL)
+        {
             return NULL;
         }
 
@@ -97,12 +116,16 @@ void* mymemory_alloc(mymemory_t *memory, size_t size){
         novo_nodo->next = NULL;
 
         /* Insere na lista mantendo a ordem crescente de endereco */
-        if (memory->head == NULL || (char*)novo_nodo->start < (char*)memory->head->start) {
+        if (memory->head == NULL || (char *)novo_nodo->start < (char *)memory->head->start)
+        {
             novo_nodo->next = memory->head;
             memory->head = novo_nodo;
-        } else {
+        }
+        else
+        {
             allocation_t *temp = memory->head;
-            while (temp->next != NULL && (char*)temp->next->start < (char*)novo_nodo->start) {
+            while (temp->next != NULL && (char *)temp->next->start < (char *)novo_nodo->start)
+            {
                 temp = temp->next;
             }
             novo_nodo->next = temp->next;
@@ -120,8 +143,10 @@ void* mymemory_alloc(mymemory_t *memory, size_t size){
  * Se ptr nao for o inicio de nenhuma alocacao, nao faz nada.
  * Observacao: o pool nao e tocado; "liberar" = remover o nodo de controle
  * da lista. A regiao volta a ser vista como lacuna pelo alloc/stats. */
-void mymemory_free(mymemory_t *memory, void *ptr){
-    if (memory == NULL || ptr == NULL) {
+void mymemory_free(mymemory_t *memory, void *ptr)
+{
+    if (memory == NULL || ptr == NULL)
+    {
         return;
     }
 
@@ -129,19 +154,24 @@ void mymemory_free(mymemory_t *memory, void *ptr){
     allocation_t *atual = memory->head;
 
     /* Procura o nodo cujo start == ptr, guardando o anterior para religar a lista */
-    while (atual != NULL && atual->start != ptr) {
+    while (atual != NULL && atual->start != ptr)
+    {
         anterior = atual;
         atual = atual->next;
     }
 
-    if (atual == NULL) {
+    if (atual == NULL)
+    {
         return; /* ptr nao e uma alocacao valida */
     }
 
-    if (anterior == NULL) {
-        memory->head = atual->next;     /* era o primeiro da lista */
-    } else {
-        anterior->next = atual->next;   /* estava no meio ou no fim */
+    if (anterior == NULL)
+    {
+        memory->head = atual->next; /* era o primeiro da lista */
+    }
+    else
+    {
+        anterior->next = atual->next; /* estava no meio ou no fim */
     }
 
     free(atual);
@@ -151,22 +181,26 @@ void mymemory_free(mymemory_t *memory, void *ptr){
 /* Lista todas as alocacoes atuais, em ordem de endereco.
  * Alem do endereco real, mostra o offset (distancia do inicio do pool),
  * que e bem mais legivel para enxergar as lacunas. */
-void mymemory_display(mymemory_t *memory){
-    if (memory == NULL) {
+void mymemory_display(mymemory_t *memory)
+{
+    if (memory == NULL)
+    {
+        return;
+    }
+
+    if (memory->head == NULL)
+    {
+        printf("(nenhuma alocacao)\n");
         return;
     }
 
     printf("--- Alocacoes atuais (pool em %p, %zu bytes) ---\n",
            memory->pool, memory->total_size);
 
-    if (memory->head == NULL) {
-        printf("(nenhuma alocacao)\n");
-        return;
-    }
-
     int i = 0;
-    for (allocation_t *a = memory->head; a != NULL; a = a->next, i++) {
-        size_t offset = (size_t)((char*)a->start - (char*)memory->pool);
+    for (allocation_t *a = memory->head; a != NULL; a = a->next, i++)
+    {
+        size_t offset = (size_t)((char *)a->start - (char *)memory->pool);
         printf("[%2d] inicio=%p | offset %5zu | tamanho %5zu | fim %5zu\n",
                i, a->start, offset, a->size, offset + a->size);
     }
@@ -176,38 +210,45 @@ void mymemory_display(mymemory_t *memory){
 /* Percorre o pool do inicio ao fim acompanhando a lista (ordenada):
  * tudo que esta entre o "cursor" e o inicio do proximo bloco e lacuna livre.
  * Cada lacuna contigua conta como um fragmento. */
-void mymemory_stats(mymemory_t *memory){
-    if (memory == NULL) {
+void mymemory_stats(mymemory_t *memory)
+{
+    if (memory == NULL)
+    {
         return;
     }
 
-    size_t num_alocacoes  = 0;
-    size_t total_alocado  = 0;
-    size_t maior_livre    = 0;
+    size_t num_alocacoes = 0;
+    size_t total_alocado = 0;
+    size_t maior_livre = 0;
     size_t num_fragmentos = 0;
 
-    char *cursor   = (char*)memory->pool;                       /* inicio da proxima lacuna possivel */
-    char *fim_pool = (char*)memory->pool + memory->total_size;
+    char *cursor = (char *)memory->pool; /* inicio da proxima lacuna possivel */
+    char *fim_pool = (char *)memory->pool + memory->total_size;
 
-    for (allocation_t *a = memory->head; a != NULL; a = a->next) {
+    for (allocation_t *a = memory->head; a != NULL; a = a->next)
+    {
         num_alocacoes++;
         total_alocado += a->size;
 
-        size_t lacuna = (size_t)((char*)a->start - cursor);
-        if (lacuna > 0) {
+        size_t lacuna = (size_t)((char *)a->start - cursor);
+        if (lacuna > 0)
+        {
             num_fragmentos++;
-            if (lacuna > maior_livre) {
+            if (lacuna > maior_livre)
+            {
                 maior_livre = lacuna;
             }
         }
-        cursor = (char*)a->start + a->size;
+        cursor = (char *)a->start + a->size;
     }
 
     /* Lacuna final: do fim do ultimo bloco ate o fim do pool */
     size_t lacuna_final = (size_t)(fim_pool - cursor);
-    if (lacuna_final > 0) {
+    if (lacuna_final > 0)
+    {
         num_fragmentos++;
-        if (lacuna_final > maior_livre) {
+        if (lacuna_final > maior_livre)
+        {
             maior_livre = lacuna_final;
         }
     }
@@ -225,16 +266,19 @@ void mymemory_stats(mymemory_t *memory){
 /* ============================================================= cleanup */
 void mymemory_cleanup(mymemory_t *memory)
 {
-    if(memory == NULL){
+    if (memory == NULL)
+    {
         return;
     }
     allocation_t *atual = memory->head;
-    while(atual !=NULL){
+    while (atual != NULL)
+    {
         allocation_t *proximo = atual->next;
         free(atual);
         atual = proximo;
     }
-    if(memory->pool != NULL){
+    if (memory->pool != NULL)
+    {
         free(memory->pool);
     }
     free(memory);
