@@ -3,15 +3,6 @@
  * Programacao de Software Basico - Trabalho 2
  *
  * Estrategia de alocacao: First Fit (primeira lacuna que couber).
- *
- * A lista encadeada de allocation_t e mantida ORDENADA por endereco de
- * inicio. Isso permite descobrir as lacunas livres percorrendo a lista
- * uma unica vez: a lacuna entre dois nodos e simplesmente
- *     inicio_do_proximo - (inicio_do_atual + tamanho_do_atual)
- *
- * malloc/free so sao usados para as estruturas de controle
- * (mymemory_t e os nodos allocation_t) e para o proprio pool,
- * conforme a restricao do enunciado.
  */
 #include <stdio.h>
 #include <stdlib.h>
