@@ -141,7 +141,6 @@ void mymemory_free(mymemory_t *memory, void *ptr)
     allocation_t *anterior = NULL;
     allocation_t *atual = memory->head;
 
-    /* Procura o nodo cujo start == ptr, guardando o anterior para religar a lista */
     while (atual != NULL && atual->start != ptr)
     {
         anterior = atual;
@@ -150,25 +149,22 @@ void mymemory_free(mymemory_t *memory, void *ptr)
 
     if (atual == NULL)
     {
-        return; /* ptr nao e uma alocacao valida */
+        return;
     }
 
     if (anterior == NULL)
     {
-        memory->head = atual->next; /* era o primeiro da lista */
+        memory->head = atual->next;
     }
     else
     {
-        anterior->next = atual->next; /* estava no meio ou no fim */
+        anterior->next = atual->next;
     }
 
     free(atual);
 }
 
 /* ============================================================= display */
-/* Lista todas as alocacoes atuais, em ordem de endereco.
- * Alem do endereco real, mostra o offset (distancia do inicio do pool),
- * que e bem mais legivel para enxergar as lacunas. */
 void mymemory_display(mymemory_t *memory)
 {
     if (memory == NULL)
@@ -207,7 +203,7 @@ void mymemory_stats(mymemory_t *memory)
     size_t maior_livre = 0;
     size_t num_fragmentos = 0;
 
-    char *cursor = (char *)memory->pool; /* inicio da proxima lacuna possivel */
+    char *cursor = (char *)memory->pool;
     char *fim_pool = (char *)memory->pool + memory->total_size;
 
     for (allocation_t *a = memory->head; a != NULL; a = a->next)
