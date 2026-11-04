@@ -98,7 +98,6 @@ void *mymemory_alloc(mymemory_t *memory, size_t size)
 
     if (endereco_disponivel != NULL)
     {
-        /* Cria o nodo de controle da nova alocacao */
         allocation_t *novo_nodo = (allocation_t *)malloc(sizeof(allocation_t));
         if (novo_nodo == NULL)
         {
@@ -109,7 +108,6 @@ void *mymemory_alloc(mymemory_t *memory, size_t size)
         novo_nodo->size = size;
         novo_nodo->next = NULL;
 
-        /* Insere na lista mantendo a ordem crescente de endereco */
         if (memory->head == NULL || (char *)novo_nodo->start < (char *)memory->head->start)
         {
             novo_nodo->next = memory->head;
@@ -129,14 +127,10 @@ void *mymemory_alloc(mymemory_t *memory, size_t size)
         return endereco_disponivel;
     }
 
-    return NULL; /* nenhuma lacuna comporta o tamanho pedido */
+    return NULL;
 }
 
 /* ================================================================ free */
-/* Libera a alocacao cujo inicio e exatamente ptr.
- * Se ptr nao for o inicio de nenhuma alocacao, nao faz nada.
- * Observacao: o pool nao e tocado; "liberar" = remover o nodo de controle
- * da lista. A regiao volta a ser vista como lacuna pelo alloc/stats. */
 void mymemory_free(mymemory_t *memory, void *ptr)
 {
     if (memory == NULL || ptr == NULL)
