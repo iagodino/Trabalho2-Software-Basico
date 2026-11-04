@@ -50,7 +50,6 @@ void *mymemory_alloc(mymemory_t *memory, size_t size)
 
     if (memory->head == NULL)
     {
-        /* Lista vazia: o pool inteiro esta livre */
         if (size <= memory->total_size)
         {
             endereco_disponivel = memory->pool;
