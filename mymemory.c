@@ -61,11 +61,8 @@ void *mymemory_alloc(mymemory_t *memory, size_t size)
     }
     else
     {
-        /* First Fit: percorre as lacunas em ordem de endereco e
-         * para na PRIMEIRA que for grande o suficiente. */
         allocation_t *atual = memory->head;
 
-        /* Lacuna 1: entre o inicio do pool e o primeiro bloco */
         size_t espaco_antes = (size_t)((char *)atual->start - (char *)memory->pool);
         if (espaco_antes >= size)
         {
@@ -73,7 +70,6 @@ void *mymemory_alloc(mymemory_t *memory, size_t size)
         }
         else
         {
-            /* Lacuna 2: entre o fim de um bloco e o inicio do proximo */
             while (atual->next != NULL)
             {
                 void *fim_atual = (char *)atual->start + atual->size;
@@ -87,7 +83,6 @@ void *mymemory_alloc(mymemory_t *memory, size_t size)
                 atual = atual->next;
             }
 
-            /* Lacuna 3: entre o fim do ultimo bloco e o fim do pool */
             if (endereco_disponivel == NULL)
             {
                 void *fim_ultimo = (char *)atual->start + atual->size;
