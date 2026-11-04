@@ -195,9 +195,6 @@ void mymemory_display(mymemory_t *memory)
 }
 
 /* =============================================================== stats */
-/* Percorre o pool do inicio ao fim acompanhando a lista (ordenada):
- * tudo que esta entre o "cursor" e o inicio do proximo bloco e lacuna livre.
- * Cada lacuna contigua conta como um fragmento. */
 void mymemory_stats(mymemory_t *memory)
 {
     if (memory == NULL)
@@ -229,8 +226,7 @@ void mymemory_stats(mymemory_t *memory)
         }
         cursor = (char *)a->start + a->size;
     }
-
-    /* Lacuna final: do fim do ultimo bloco ate o fim do pool */
+    
     size_t lacuna_final = (size_t)(fim_pool - cursor);
     if (lacuna_final > 0)
     {
